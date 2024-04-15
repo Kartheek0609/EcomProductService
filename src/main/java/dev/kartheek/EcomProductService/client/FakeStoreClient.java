@@ -1,5 +1,6 @@
 package dev.kartheek.EcomProductService.client;
 
+import dev.kartheek.EcomProductService.dto.FakeStoreCartResponseDTO;
 import dev.kartheek.EcomProductService.dto.FakeStoreProductRatingDTO;
 import dev.kartheek.EcomProductService.dto.FakeStoreProductResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ public class FakeStoreClient {
     private String fakeStoreAPIBaseUrl;
     @Value("${fakestore.api.product.path}")
     private String getFakeStoreAPIProductPath;
+    @Value("${fakestore.api.cart.for.user.path}")
+    private String fakeStoreAPICartForUser;
     public List<FakeStoreProductResponseDTO> getAllProducts(){
         String fakeStoreGetAllProductsURL= fakeStoreAPIBaseUrl.concat(getFakeStoreAPIProductPath);
         RestTemplate restTemplate=restTemplateBuilder.build();
@@ -32,5 +35,14 @@ public class FakeStoreClient {
         ResponseEntity<FakeStoreProductResponseDTO> product=
                 restTemplate.getForEntity(fakeStoreGetProductByIdUrl, FakeStoreProductResponseDTO.class);
         return product.getBody();
+    }
+
+    public List<FakeStoreCartResponseDTO> getCartByUserId(int userId){
+        if(userId <1) return null;
+        String fakeStoreGetCartForUser= fakeStoreAPIBaseUrl.concat(fakeStoreAPICartForUser).concat(String.valueOf(userId));
+        RestTemplate restTemplate= restTemplateBuilder.build();
+        ResponseEntity<FakeStoreCartResponseDTO[]> cartResponse =
+                restTemplate.getForEntity(fakeStoreGetCartForUser, FakeStoreCartResponseDTO[].class);
+        return List.of(cartResponse.getBody());
     }
 }
